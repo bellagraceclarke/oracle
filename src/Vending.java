@@ -53,7 +53,7 @@ public class Vending {
                 .map(Coin::getCoinValue)
                 .sorted(Collections.reverseOrder())
                 .collect(Collectors.toList());
-        int changeInPence = (int) (change*100);
+        int changeInPence = Math.round(change*100);
         int quotient;
         int remainder;
         //iterate through coins
