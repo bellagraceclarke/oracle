@@ -1,40 +1,42 @@
+import java.math.BigDecimal;
+
 public enum Coin {
-    PENNY(0.01f),
-    TWO_PENNY(0.02f),
-    FIVE(0.05f),
-    TEN(0.1f),
-    TWENTY(0.2f),
-    FIFTY(0.5f),
-    POUND(1.0f),
-    TWO_POUND(2.0f);
+    PENNY("0.01"),
+    TWO_PENNY("0.02"),
+    FIVE("0.05"),
+    TEN("0.1"),
+    TWENTY("0.2"),
+    FIFTY("0.5"),
+    POUND("1.0"),
+    TWO_POUND("2.0");
 
-    private final float coinValue;
+    private final BigDecimal coinValue;
 
-    Coin(Float coin) {
-        this.coinValue = coin;
+    Coin(String coin) {
+        this.coinValue = new BigDecimal(coin);
     }
 
-    public float getCoinValue() {
+    public BigDecimal getCoinValue() {
         return coinValue;
     }
 
 
-public static Coin getCoinName(Float coinFloat) throws Exception {
-    if (coinFloat == 0.01f) {
+public static Coin getCoinName(BigDecimal coinBigDec) throws Exception {
+    if (coinBigDec.equals(new BigDecimal("0.01"))) {
         return PENNY;
-    } else if (coinFloat == 0.02f) {
+    } else if (coinBigDec.equals(new BigDecimal("0.02"))) {
         return TWO_PENNY;
-    } else if (coinFloat == 0.05f) {
+    } else if (coinBigDec.equals(new BigDecimal("0.05"))) {
         return FIVE;
-    } else if (coinFloat == 0.1f) {
+    } else if (coinBigDec.equals(new BigDecimal("0.1"))) {
         return TEN;
-    } else if (coinFloat == 0.2f) {
+    } else if (coinBigDec.equals(new BigDecimal("0.2"))) {
         return TWENTY;
-    } else if (coinFloat == 0.5f) {
+    } else if (coinBigDec.equals(new BigDecimal("0.5"))) {
         return FIFTY;
-    } else if (coinFloat == 1.0f) {
+    } else if (coinBigDec.equals(new BigDecimal("1.0"))) {
         return POUND;
-    } else if (coinFloat == 2.0f) {
+    } else if (coinBigDec.equals(new BigDecimal("2.0"))) {
         return TWO_POUND;
     } else {
         throw new Exception("Coin not found.");

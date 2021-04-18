@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
@@ -10,7 +11,7 @@ public class Main {
         System.out.println("Enter Inital State");
         // Read user input
         String initialChange = scanner.nextLine();
-        Vending vending = new Vending(Float.parseFloat(initialChange));
+        Vending vending = new Vending(initialChange);
 
         //Create string builder
         StringJoiner optionsPrompt = new StringJoiner(System.lineSeparator());
@@ -28,21 +29,21 @@ public class Main {
             // Initialise instance of vending with initial state
             switch (nextLine.toLowerCase(Locale.ROOT)) {
                 case "d":
-//                    System.out.println("Deposit floating point balance");
-//                    String balance = scanner.nextLine();
-//                    System.out.print("Total balance: ");
-//                    System.out.printf("%.2f%n", vending.depositAmount(Float.parseFloat(balance)));  // Output user input
                     System.out.println(java.util.Arrays.asList(Coin.values()));
                     String coin = scanner.nextLine();
                     System.out.print("Total balance: ");
-                    System.out.printf("%.2f%n", vending.depositCoins(Coin.valueOf(coin.toUpperCase(Locale.ROOT))));  // Output user input
+                    try {
+                        System.out.printf("%.2f%n", vending.depositCoins(Coin.valueOf(coin.toUpperCase(Locale.ROOT))));  // Output user input
+                    } catch (Exception e) {
+                        System.out.println("Invalid coin");
+                    }
                     break;
                 case "v":
                     System.out.println("Enter product price");
                     String productPrice = scanner.nextLine();
                     System.out.print("Total change: ");
-                    if (vending.vendProduct(Float.parseFloat(productPrice))) {
-                        ChangeTuple<List<Coin>, Float> changeTuple = vending.getChange();
+                    if (vending.vendProduct(new BigDecimal(productPrice))) {
+                        ChangeTuple<List<Coin>, BigDecimal> changeTuple = vending.getChange();
                         System.out.printf("Total change: %.2f%n", changeTuple.getSecond());
                         System.out.println("Coins returned " + changeTuple.getFirst());
                     } else {

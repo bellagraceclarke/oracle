@@ -7,76 +7,71 @@ import java.util.stream.Stream;
 
 public class Vending {
     //Balance of the customer
-    private Float balance = 0.0f;
+    private BigDecimal balance = new BigDecimal("0.0");
 
     //Total sum of vending machine change
-    private Float totalChange = 0.0f;
+    private BigDecimal totalChange;
 
-    public Vending(Float initalTotal) {
-        this.totalChange = initalTotal;
+    public Vending(String initalTotal) {
+        totalChange = new BigDecimal(initalTotal);
     }
 
-    public float depositCoins(Coin coin) {
-        balance += coin.getCoinValue();
-        totalChange += coin.getCoinValue();
+    public BigDecimal depositCoins(Coin coin) {
+        balance=balance.add(coin.getCoinValue());
+        totalChange=totalChange.add(coin.getCoinValue());
         return balance;
     }
 
-    public float depositAmount(Float amount) {
-        totalChange += amount;
-        balance += amount;
-        return balance;
-    }
-
-    public boolean vendProduct(Float price) {
-        //main logic
-        if (balance >= price) {
-            balance -= price;
+    public boolean vendProduct(BigDecimal price) {
+        //check product price is not negative
+        //check balance is greater than or equal to the product price
+        //e.g. if product can be afforded
+        if (price.signum()>=0 && balance.compareTo(price) >= 0) {
+            balance = balance.subtract(price.abs());
             return true;
         }
         return false;
     }
 
-    public ChangeTuple<List<Coin>, Float> getChange() {
+    public ChangeTuple<List<Coin>, BigDecimal> getChange() {
         //Change for customer after purchase
-        Float change = balance;
-        ChangeTuple<List<Coin>, Float> changeTuple = new ChangeTuple<>(calculateCoins(change), change);
-        balance = 0.0f;
+        BigDecimal change = balance;
+        ChangeTuple<List<Coin>, BigDecimal> changeTuple = new ChangeTuple<>(calculateCoins(change), change);
+        balance = balance.subtract(balance);
         return changeTuple;
     }
 
-    public List<Coin> calculateCoins(Float change) {
+    public List<Coin> calculateCoins(BigDecimal change) {
         List<Coin> coinChangeList = new ArrayList<>();
         //find greatest divisor of change (in terms of the Coin enum)
         //find the quotient and remainder
-        List<Float> orderedCoinValues = Stream.of(Coin.values())
+        List<BigDecimal> orderedCoinValues = Stream.of(Coin.values())
                 .map(Coin::getCoinValue)
                 .sorted(Collections.reverseOrder())
                 .collect(Collectors.toList());
-        int changeInPence = Math.round(change*100);
-        int quotient;
-        int remainder;
+
+        BigDecimal quotient;
+        BigDecimal remainder;
         //iterate through coins
         //change/coin
         //if > 0 then find quotient then remainder
         //add to list
         //decrement change value
 
-        for (Float coin : orderedCoinValues) {
-            quotient = (int) (changeInPence/(coin*100));
-            remainder = (int) (changeInPence%(coin*100));
-            if (quotient>0) {
+        for (BigDecimal coin : orderedCoinValues) {
+            quotient = change.divide(coin, BigDecimal.ROUND_FLOOR);
+            remainder = change.remainder(coin);
+            if (quotient.signum()==1) {
                 try {
-                    for (int count = 0; count < quotient; count++) {
+                    for (int count = 0; count < quotient.intValue(); count++) {
                         coinChangeList.add(Coin.getCoinName(coin));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                //our issue is that the remainder ends up being a stupid decimal
-                changeInPence = remainder;
+                change = remainder;
             }
-            if (changeInPence == 0) {
+            if (change.signum()==0) {
                 break;
             }
         }
@@ -84,7 +79,7 @@ public class Vending {
         return coinChangeList;
     }
 
-    public float getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 }
