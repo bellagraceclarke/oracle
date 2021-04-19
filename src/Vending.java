@@ -26,7 +26,11 @@ public class Vending {
         //check product price is not negative
         //check balance is greater than or equal to the product price
         //e.g. if product can be afforded
-        if (price.signum()>=0 && balance.compareTo(price) >= 0) {
+        String scale =  price.stripTrailingZeros().toPlainString();
+        int index = scale.indexOf(".");
+        int decimalPlaces = index < 0 ? 0 : scale.length() - index - 1;
+
+        if (price.signum()>=0 && balance.compareTo(price) >= 0 && decimalPlaces <= 2) {
             balance = balance.subtract(price.abs());
             return true;
         }
