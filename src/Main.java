@@ -44,23 +44,30 @@ public class Main {
                 case "v":
                     System.out.println("Enter product price");
                     String productPrice = scanner.nextLine();
-                    if (vending.vendProduct(new BigDecimal(productPrice))) {
+                    VendMessage vendMessage = vending.vendProduct(new BigDecimal(productPrice));
+                    //If the vend is accepted, print the total change and the coins returned
+                    //otherwise print the associated message
+                    if (vendMessage == VendMessage.VEND_ACCEPTED) {
                         ChangeTuple<List<Coin>, BigDecimal> changeTuple = vending.getChange();
                         System.out.printf("Total change: %.2f%n", changeTuple.getSecond());
                         System.out.println("Coins returned " + changeTuple.getFirst());
-                    } else {
+                    } else if (vendMessage == VendMessage.BALANCE_INSUFFICIENT) {
                         System.out.println("Balance insufficient");
+                    } else {
+                        System.out.println("Invalid Value, refer to vending instructions");
                     }
                     break;
                 case "b":
-                    System.out.printf("Balance: %.2f%n", vending.getBalance());
+                    //Print the respective balances
+                    System.out.printf("Customer Balance: %.2f%n", vending.getBalance());
+                    System.out.println("Vending machine total balance: " + vending.getMachineTotal());
                     break;
                 default:
                     System.out.println("Invalid input");
             }
+            //Print the options for the user after each input
             System.out.println(optionsPrompt);
             nextLine = scanner.nextLine();
-
         }
 
     }

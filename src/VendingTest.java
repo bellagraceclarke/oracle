@@ -12,6 +12,7 @@ public class VendingTest {
 
     private Vending vending;
 
+    //Each test needs an instance of Vending in order to run
     @BeforeEach
     public void setUp() {
         vending = new Vending("5.0");

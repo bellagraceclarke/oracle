@@ -16,39 +16,59 @@ public class Vending {
         totalChange = new BigDecimal(initalTotal);
     }
 
+    //Increment the customer balance as well as the total machine balance with the coin value deposited
+    //Accepts a coin enum value
+    //Returns the balance of the user as a big decimal
     public BigDecimal depositCoins(Coin coin) {
-        balance=balance.add(coin.getCoinValue());
-        totalChange=totalChange.add(coin.getCoinValue());
+        balance = balance.add(coin.getCoinValue());
+        totalChange = totalChange.add(coin.getCoinValue());
         return balance;
     }
 
-    public boolean vendProduct(BigDecimal price) {
-        //check product price is not negative
+    /**
+     * Checks to see if the vend request is valid
+     *
+     * @param price of product the user entered
+     * @return message to be displayed
+     */
+    public VendMessage vendProduct(BigDecimal price) {
+        VendMessage vendMessage;
+
+        //check product price is positive
         //check balance is greater than or equal to the product price
         //e.g. if product can be afforded
-        String scale =  price.stripTrailingZeros().toPlainString();
-        int index = scale.indexOf(".");
-        int decimalPlaces = index < 0 ? 0 : scale.length() - index - 1;
+        //return appropriate enum message
 
-        if (price.signum()>=0 && balance.compareTo(price) >= 0 && decimalPlaces <= 2) {
+        int scale = price.scale();
+        if (price.signum() < 0 || scale > 2) {
+            vendMessage = VendMessage.INVALID_VALUE;
+        } else if (balance.compareTo(price) < 0) {
+            vendMessage = VendMessage.BALANCE_INSUFFICIENT;
+        } else {
             balance = balance.subtract(price.abs());
-            return true;
+            vendMessage = VendMessage.VEND_ACCEPTED;
         }
-        return false;
+        return vendMessage;
     }
 
     public ChangeTuple<List<Coin>, BigDecimal> getChange() {
         //Change for customer after purchase
         BigDecimal change = balance;
+        //return a tuple containing a list of coins, as well as the total sum of coins
         ChangeTuple<List<Coin>, BigDecimal> changeTuple = new ChangeTuple<>(calculateCoins(change), change);
         balance = balance.subtract(balance);
         return changeTuple;
     }
 
+    /**
+     * Calculates the exact coins to be returned to the user
+     *
+     * @param change the change to calculate necessary coins for
+     * @return a list of type Coin
+     */
     public List<Coin> calculateCoins(BigDecimal change) {
         List<Coin> coinChangeList = new ArrayList<>();
-        //find greatest divisor of change (in terms of the Coin enum)
-        //find the quotient and remainder
+        //create a list of the ordered coin values
         List<BigDecimal> orderedCoinValues = Stream.of(Coin.values())
                 .map(Coin::getCoinValue)
                 .sorted(Collections.reverseOrder())
@@ -56,16 +76,16 @@ public class Vending {
 
         BigDecimal quotient;
         BigDecimal remainder;
+
         //iterate through coins
-        //change/coin
         //if > 0 then find quotient then remainder
-        //add to list
-        //decrement change value
+        //add coin to list
+        //decrement change value and repeat
 
         for (BigDecimal coin : orderedCoinValues) {
             quotient = change.divide(coin, BigDecimal.ROUND_FLOOR);
             remainder = change.remainder(coin);
-            if (quotient.signum()==1) {
+            if (quotient.signum() == 1) {
                 try {
                     for (int count = 0; count < quotient.intValue(); count++) {
                         coinChangeList.add(Coin.getCoinName(coin));
@@ -75,15 +95,21 @@ public class Vending {
                 }
                 change = remainder;
             }
-            if (change.signum()==0) {
+            //when the change reaches 0, the coins needed have been added to the list
+            if (change.signum() == 0) {
                 break;
             }
         }
-
         return coinChangeList;
     }
 
+    //user balance getter
     public BigDecimal getBalance() {
         return balance;
+    }
+
+    //machine balance getter
+    public BigDecimal getMachineTotal() {
+        return totalChange;
     }
 }

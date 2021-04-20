@@ -17,13 +17,9 @@ Describe how to run the tests.
 Design Decisions
 When writing production quality API I would consider using Spring to build a RESTful service.
 However for this task a command line program that satisfied the requirements was sufficient.
-This was, I could showcase more programming skills and understanding.
 
-The decision to use Big Decimals when calculating the number of coins needed to be dispensed as change
+The decision to use Big Decimals (when calculating the number of coins needed to be dispensed as change)
 came from the fact floats are not suitable for dividing due to the imprecision.
-
-The instructions provided asked for the initial float to be accepted as a parameter. This implied not individual coins
-one at a time. This was ambiguous.
 
 The user is able to deposit coins one at a time, this was handled by writing an enum which contained the accepted coins.
 
