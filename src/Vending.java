@@ -12,8 +12,8 @@ public class Vending {
     //Total sum of vending machine change
     private BigDecimal totalChange;
 
-    public Vending(String initalTotal) {
-        totalChange = new BigDecimal(initalTotal);
+    public Vending(String initialTotal) {
+            totalChange = new BigDecimal(initialTotal);
     }
 
     //Increment the customer balance as well as the total machine balance with the coin value deposited
